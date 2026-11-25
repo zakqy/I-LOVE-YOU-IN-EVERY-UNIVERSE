@@ -6,7 +6,7 @@ A generative ASCII art animation: a sealed love letter is opened with a click, b
 <img width="1377" height="810" alt="Special Letter Preview" src="https://github.com/user-attachments/assets/2366232b-8c37-4fb5-a858-b7438729ddf2" />
 
 ## 🌐 Live Web Version
-Experience the interactive web animation directly in your browser with romantic music:  
+Experience the interactive web animation directly in your browser:  
 👉 **[Live Demo on GitHub Pages](https://zakqy.github.io/I-LOVE-YOU-IN-EVERY-UNIVERSE/)**
 
 ---
@@ -17,7 +17,6 @@ Experience the interactive web animation directly in your browser with romantic 
 - **Fire Simulation:** Cellular-automaton heat field with a fire color ramp, rising sparks, and drifting smoke.
 - **Ember-to-Rose Transformation:** Embers from the burning paper float along curved paths and settle into place, building a rose from top to bottom.
 - **Radiant Finale:** A soft blue background with animated light rays, twinkling stars, and floating motes.
-- **Romantic Audio:** Integrated soft music box ambient sound in the web version.
 
 ---
 

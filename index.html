@@ -103,47 +103,6 @@
       transition: opacity 0.5s ease;
     }
 
-    /* Initial click prompt overlay (optional) */
-    #start-overlay {
-      position: absolute;
-      inset: 0;
-      background: rgba(3, 2, 4, 0.85);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      z-index: 20;
-      cursor: pointer;
-      transition: opacity 0.6s ease;
-    }
-    #start-overlay.hidden {
-      opacity: 0;
-      pointer-events: none;
-    }
-    .heart-pulse {
-      font-size: 48px;
-      margin-bottom: 16px;
-      animation: pulse 1.5s infinite;
-    }
-    @keyframes pulse {
-      0% { transform: scale(1); filter: drop-shadow(0 0 4px #ff4d6d); }
-      50% { transform: scale(1.15); filter: drop-shadow(0 0 16px #ff4d6d); }
-      100% { transform: scale(1); filter: drop-shadow(0 0 4px #ff4d6d); }
-    }
-    .prompt-text {
-      font-size: 16px;
-      color: #eeddf5;
-      letter-spacing: 2px;
-      font-weight: 400;
-      text-transform: uppercase;
-    }
-    .sub-prompt {
-      font-size: 12px;
-      color: rgba(255, 255, 255, 0.5);
-      margin-top: 8px;
-    }
   </style>
 </head>
 <body>
@@ -152,18 +111,9 @@
     <div class="title-banner">I Love You in Every Universe</div>
     <canvas id="ascii-canvas"></canvas>
 
-    <div id="start-overlay">
-      <div class="heart-pulse">💌</div>
-      <div class="prompt-text">Click to Open Letter</div>
-      <div class="sub-prompt">(Plays with romantic background audio)</div>
-    </div>
-
     <div class="controls">
       <button class="btn" id="btn-restart" title="Restart (or press R)">
         <span>↺</span> Restart
-      </button>
-      <button class="btn" id="btn-audio" title="Toggle gentle romantic music">
-        <span id="audio-icon">🔇</span> Music: Off
       </button>
       <button class="btn" id="btn-fullscreen" title="Toggle Fullscreen">
         <span>⛶</span> Fullscreen
@@ -1478,106 +1428,8 @@
       animId = requestAnimationFrame(tick);
     }
 
-    // --- Romantic Web Audio Ambient Music ---
-    let audioCtx = null;
-    let isAudioPlaying = false;
-    let audioTimeout = null;
-
-    function initAudio() {
-      if (audioCtx) return;
-      const AudioContext = window.AudioContext || window.webkitAudioContext;
-      audioCtx = new AudioContext();
-    }
-
-    // Gentle kalimba / music box bell tone
-    function playNote(freq, time, duration = 2.5, gainVal = 0.08) {
-      if (!audioCtx || !isAudioPlaying) return;
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-
-      osc.type = "sine";
-      osc.frequency.setValueAtTime(freq, time);
-
-      // Soft music box harmonic overtone
-      const osc2 = audioCtx.createOscillator();
-      const gain2 = audioCtx.createGain();
-      osc2.type = "triangle";
-      osc2.frequency.setValueAtTime(freq * 2, time);
-
-      gain.gain.setValueAtTime(0, time);
-      gain.gain.linearRampToValueAtTime(gainVal, time + 0.04);
-      gain.gain.exponentialRampToValueAtTime(0.0001, time + duration);
-
-      gain2.gain.setValueAtTime(0, time);
-      gain2.gain.linearRampToValueAtTime(gainVal * 0.35, time + 0.02);
-      gain2.gain.exponentialRampToValueAtTime(0.0001, time + duration * 0.8);
-
-      osc.connect(gain);
-      osc2.connect(gain2);
-      gain.connect(audioCtx.destination);
-      gain2.connect(audioCtx.destination);
-
-      osc.start(time);
-      osc.stop(time + duration);
-      osc2.start(time);
-      osc2.stop(time + duration);
-    }
-
-    // A dreamy romantic chord progression (C - Em/B - Am - F)
-    const MELODY = [
-      // [freq, delay, duration, gain]
-      [523.25, 0.0, 3.0, 0.09],  // C5
-      [659.25, 0.4, 2.5, 0.07],  // E5
-      [783.99, 0.8, 3.5, 0.08],  // G5
-      [1046.50, 1.4, 4.0, 0.09], // C6
-      [987.77, 2.8, 3.0, 0.08],  // B5
-      [783.99, 3.4, 2.5, 0.07],  // G5
-      [659.25, 4.0, 3.0, 0.07],  // E5
-      [880.00, 5.2, 4.0, 0.09],  // A5
-      [783.99, 6.2, 2.5, 0.07],  // G5
-      [698.46, 7.0, 3.5, 0.08],  // F5
-      [659.25, 8.2, 3.0, 0.07],  // E5
-      [587.33, 9.4, 4.0, 0.08],  // D5
-      [523.25, 11.0, 5.0, 0.10], // C5
-    ];
-
-    function scheduleMelodyLoop() {
-      if (!isAudioPlaying || !audioCtx) return;
-      const now = audioCtx.currentTime;
-      for (const [freq, delay, dur, vol] of MELODY) {
-        playNote(freq, now + delay, dur, vol);
-      }
-      audioTimeout = setTimeout(scheduleMelodyLoop, 13000);
-    }
-
-    function toggleAudio() {
-      initAudio();
-      if (audioCtx.state === 'suspended') {
-        audioCtx.resume();
-      }
-      isAudioPlaying = !isAudioPlaying;
-      const icon = document.getElementById("audio-icon");
-      const btn = document.getElementById("btn-audio");
-      if (isAudioPlaying) {
-        icon.textContent = "🔊";
-        btn.innerHTML = `<span id="audio-icon">🔊</span> Music: On`;
-        scheduleMelodyLoop();
-      } else {
-        icon.textContent = "🔇";
-        btn.innerHTML = `<span id="audio-icon">🔇</span> Music: Off`;
-        if (audioTimeout) clearTimeout(audioTimeout);
-      }
-    }
-
     // --- UI Controls ---
-    const overlay = document.getElementById("start-overlay");
-    overlay.addEventListener("click", () => {
-      overlay.classList.add("hidden");
-      toggleAudio(); // Start music on user gesture
-    });
-
     document.getElementById("btn-restart").addEventListener("click", resetSimulation);
-    document.getElementById("btn-audio").addEventListener("click", toggleAudio);
 
     document.getElementById("btn-fullscreen").addEventListener("click", () => {
       if (!document.fullscreenElement) {
